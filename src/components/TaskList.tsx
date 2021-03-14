@@ -1,9 +1,11 @@
+      
 import { useState } from 'react'
 
 import '../styles/tasklist.scss'
 
 import { FiTrash, FiCheckSquare } from 'react-icons/fi'
 
+import {v4 as uuid} from 'uuid';
 interface Task {
   id: number;
   title: string;
@@ -15,15 +17,34 @@ export function TaskList() {
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
   function handleCreateNewTask() {
-    // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+    if (!newTaskTitle) return;
+    const newTask = {
+      id:  tasks[tasks.length - 1] ?tasks[tasks.length - 1].id +1 : 1 ,
+      title: newTaskTitle,
+      isComplete: false
+    }
+    setTasks([...tasks, newTask]);
+    setNewTaskTitle('');
   }
 
   function handleToggleTaskCompletion(id: number) {
-    // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    const mirror = tasks;
+    const idx = tasks.findIndex(element => element.id ===id);
+    if(idx > -1) {
+      mirror[idx].isComplete = true;
+      console.log(`😎 ${new Date()} ~ file: TaskList.tsx ~ line 44 ~ handleToggleTaskCompletion ~ tasks`, tasks)
+
+      setTasks([...mirror]);
+    }
   }
 
   function handleRemoveTask(id: number) {
-    // Remova uma task da listagem pelo ID
+    const foundTask = tasks.findIndex(element => element.id === id);
+    if (foundTask > -1){
+      const slicedTasks = tasks.splice(foundTask +1, tasks.length + 1);
+      console.log(`slicedTasks: `, slicedTasks)
+      setTasks([...slicedTasks])
+    }
   }
 
   return (
